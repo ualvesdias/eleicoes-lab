@@ -1,0 +1,59 @@
+
+# Python / ambientes virtuais
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+# Ambiente virtual criado na raiz do projeto
+/bin/
+/lib/
+/include/
+/pyvenv.cfg
+
+# Ambientes virtuais em subpastas
+.venv/
+venv/
+env/
+
+# Bancos locais
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.db-journal
+
+# Arquivos eleitorais e artefatos locais
+/raw/
+/manifests/
+/logs/
+/exports/
+/inventario_tse.csv
+/auditoria_catalogo.csv
+
+# Credenciais e configurações locais
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# macOS / editores
+.DS_Store
+.AppleDouble
+.idea/
+.vscode/
+
+# Arquivos temporários
+*.part
+*.tmp
+*.bak
+*.log
+*.zip
+*.sha256
+*.sha512

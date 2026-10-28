@@ -1,8 +1,9 @@
 
 import argparse
 import sys
+from pathlib import Path
 
-from . import engine
+from . import engine, runner
 
 
 def main():
@@ -16,31 +17,32 @@ def main():
         required=True
     )
 
-    commands.add_parser(
-        "status",
-        help="Exibe estado do projeto e banco"
-    )
+    commands.add_parser("status")
+    commands.add_parser("listar")
+    commands.add_parser("snapshot")
 
-    commands.add_parser(
-        "listar",
-        help="Lista análises cadastradas"
-    )
-
-    new = commands.add_parser(
-        "nova",
-        help="Cria uma estrutura de análise"
-    )
+    new = commands.add_parser("nova")
     new.add_argument("id")
 
-    validate = commands.add_parser(
-        "validar",
-        help="Valida o protocolo de uma análise"
-    )
+    validate = commands.add_parser("validar")
     validate.add_argument("id")
 
-    commands.add_parser(
-        "snapshot",
-        help="Cria uma cópia consistente do SQLite"
+    execute = commands.add_parser("executar")
+    execute.add_argument("id")
+    execute.add_argument(
+        "--snapshot",
+        type=Path,
+        required=True,
+        help="Caminho do snapshot SQLite"
+    )
+
+    publish = commands.add_parser("publicar")
+    publish.add_argument("id")
+    publish.add_argument("execucao")
+    publish.add_argument(
+        "--revisor",
+        required=True,
+        help="Responsável pela revisão técnica"
     )
 
     args = parser.parse_args()
@@ -52,18 +54,28 @@ def main():
         elif args.command == "listar":
             engine.list_analyses()
 
+        elif args.command == "snapshot":
+            engine.create_snapshot()
+
         elif args.command == "nova":
             engine.create_analysis(args.id)
 
         elif args.command == "validar":
-            valid = engine.validate_analysis(args.id)
-            if not valid:
+            if not engine.validate_analysis(args.id):
                 return 2
 
-        elif args.command == "snapshot":
-            engine.create_snapshot()
+        elif args.command == "executar":
+            runner.executar(args.id.upper(), args.snapshot)
 
-    except (OSError, ValueError, RuntimeError) as exc:
+        elif args.command == "publicar":
+            runner.publicar(
+                args.id.upper(),
+                args.execucao,
+                args.revisor
+            )
+
+    except (OSError, ValueError, RuntimeError,
+            KeyError, TypeError) as exc:
         print(f"ERRO: {exc}", file=sys.stderr)
         return 1
 

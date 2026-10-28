@@ -98,7 +98,20 @@ def status():
 
     registry = read_registry()
     print("Análises cadastradas:", len(registry["analises"]))
-    print("Execuções realizadas pelo motor: nenhuma")
+
+    results_dir = ROOT / "resultados_analises"
+
+    total = (
+        sum(
+            1
+            for p in results_dir.glob("A*/**/execucao.json")
+            if p.is_file()
+        )
+        if results_dir.exists()
+        else 0
+    )
+
+    print("Execuções locais registradas:", total)
 
 
 def list_analyses():

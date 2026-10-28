@@ -60,3 +60,6 @@ env/
 # Artefatos gerados pelo motor de análises
 /snapshots/
 /resultados_analises/
+
+# Backup local de atualização
+/.fase22-backup-*/

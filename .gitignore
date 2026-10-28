@@ -57,3 +57,6 @@ env/
 *.zip
 *.sha256
 *.sha512
+# Artefatos gerados pelo motor de análises
+/snapshots/
+/resultados_analises/

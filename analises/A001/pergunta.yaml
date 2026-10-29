@@ -1,0 +1,17 @@
+id: A001
+titulo: A DEFINIR
+versao: '0.1'
+status: rascunho
+pergunta: A DEFINIR
+hipoteses:
+  h0: A DEFINIR
+  h1: A DEFINIR
+fontes: []
+metodologia:
+  populacao: A DEFINIR
+  variaveis: []
+  procedimento: A DEFINIR
+criterios_decisao:
+  sim: A DEFINIR
+  nao: A DEFINIR
+  inconclusivo: A DEFINIR

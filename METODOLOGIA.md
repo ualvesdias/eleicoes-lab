@@ -196,3 +196,67 @@ Os arquivos transmitidos classificados como totalizados também podem não repre
 - Definir os critérios de publicação de análises e evidências.
 
 **Este documento será desenvolvido progressivamente. Nenhuma etapa será descrita como validada antes de sua execução e verificação.**
+
+<!-- BEGIN:ADENDO_METODOLOGICO_ELEICOES_LAB -->
+## Adendo metodológico — integridade, cobertura e publicação (v0.2)
+
+**Estado:** protocolo de infraestrutura; a aprovação de módulos em testes sintéticos não representa validação de uma eleição real. Este adendo complementa os capítulos anteriores e deve ser refinado antes de cada investigação.
+
+### A. Cadeia de custódia digital e procedência
+
+Para cada recurso, registrar no mínimo: identificadores oficiais de dataset e recurso, título, URL original, URL efetiva após redirecionamentos (quando disponível), ano, turno, UF/exterior, data de descoberta e de download, extensão/formato declarado, caminho local, tamanho, SHA-256 local e estado de processamento. Preservar arquivos de origem inalterados. Qualquer correção de metadados deve ter histórico auditável, motivo e evidência, sem sobrescrever silenciosamente a versão anterior.
+
+A relação entre um ZIP e seu arquivo oficial de hash deve ser identificada por **dataset, eleição, turno, UF/exterior e nome canônico**, e conferida contra os metadados. Não aceitar apenas a semelhança do nome ou a extensão do recurso. Em especial, a URL de um boletim `.zip` não pode apontar para `.sha512`.
+
+### B. Estados de verificação criptográfica
+
+Distinguir:
+
+1. **Preservação local:** SHA-256 calculado sobre o arquivo baixado, para detectar alterações posteriores.
+2. **Consistência com checksum publicado:** SHA-512 (ou outro algoritmo indicado) calculado sobre o ZIP local e comparado ao valor do arquivo de hash associado, obtido da fonte oficial.
+3. **Autenticidade da origem:** requer verificação de proveniência e, quando aplicável, assinaturas digitais ou outros mecanismos oficiais; a mera igualdade de hashes não prova autoria institucional.
+
+A verificação deverá registrar algoritmo, hash esperado, hash calculado, recursos vinculados, origem do checksum, instante, versão do código e estado: `confere`, `divergente`, `ausente`, `checksum_invalido`, `metadados_incompativeis` ou equivalente documentado. A ausência de hash oficial não será transformada em resultado positivo.
+
+### C. Hierarquia de cobertura
+
+Reportar separadamente:
+
+- **Cobertura de catálogo:** recursos descobertos em relação ao conjunto publicado e à data de consulta.
+- **Cobertura de download:** recursos selecionados que foram recebidos integralmente e preservados.
+- **Cobertura criptográfica:** arquivos que passaram na comparação com referência oficial quando disponível.
+- **Cobertura de importação:** recursos processados sem falha, com identificação de linhas rejeitadas e exceções.
+- **Cobertura geográfica-documental:** presença de arquivos das **27 UFs brasileiras e do exterior (`ZZ`)** em cada turno; 28 unidades geográficas não significam 28 UFs federativas.
+- **Cobertura de seções:** confronto entre seções oficialmente esperadas/efetivadas e boletins efetivamente importados, considerando seções agregadas, urnas substituídas, contingências, duplicatas, boletins retificados e exceções documentadas.
+- **Cobertura analítica:** extensão do universo para o qual uma pergunta específica admite conclusões.
+
+A expressão **“completo”** deve sempre indicar qual nível foi aferido, qual fonte definiu o denominador e qual versão temporal do catálogo foi utilizada. Contagens de linhas em `votos_bu` não são quantidades de votos nem de seções.
+
+### D. Protocolo de snapshots e reprodutibilidade
+
+As análises utilizam snapshots produzidos pela API de backup do SQLite; cópias manuais de `eleicoes.sqlite` durante transações/WAL não são substitutas equivalentes. O resultado `PRAGMA integrity_check = ok` confirma consistência estrutural do snapshot, não completude ou autenticidade eleitoral.
+
+Para cada execução conservar: identificador, timestamp UTC, caminho lógico e SHA-256 do snapshot, versão do esquema, commit Git e estado do código, versão do protocolo, parâmetros, consultas SQL, evidências materializadas, critérios de cobertura e versões das dependências. Os resultados detalhados podem permanecer locais; seus hashes e o procedimento de reconstrução devem constar do manifesto publicado.
+
+### E. Investigação orientada por perguntas
+
+Toda análise independente deverá possuir pergunta formulada previamente, escopo, população-alvo, critérios de inclusão/exclusão, variáveis, hipóteses (quando aplicáveis), alternativas plausíveis, plano de execução, validações exigidas, critérios de decisão e limitações.
+
+A conclusão é ternária e **específica da pergunta**: `sim`, `não` ou `não foi possível chegar a uma conclusão`. Não rejeitar H₀ não significa provar H₀; resultados com cobertura insuficiente, metodologia indeterminada ou pressupostos não verificados devem receber conclusão inconclusiva quando isso comprometer a resposta. Diferenciar análises **exploratórias** de **confirmatórias**, inclusive quando critérios foram definidos após inspecionar os dados.
+
+### F. Publicação e revisão
+
+Os relatórios técnicos revisados serão versionados em `relatorios/<ID>/<execucao>/`, com manifesto de reprodutibilidade. As publicações não deverão conter os bancos locais nem os arquivos brutos volumosos. A revisão deve verificar a pergunta, os critérios previamente definidos, a cobertura, a execução dos testes, as evidências utilizadas, a coerência da interpretação e a adequação da conclusão.
+
+Uma correção posterior deve gerar nova versão, preservar o histórico anterior e descrever o motivo da revisão. A declaração de revisão humana no software é um registro de responsabilidade, **não uma certificação automática da qualidade científica**.
+
+### G. Limitações temporais e operacionais
+
+Distinguir explicitamente: horário de abertura/encerramento da votação, eventos de log, geração do BU, transmissão, recebimento e totalização. Horários de encerramento posteriores às 17h **não** identificam os horários individuais dos votos. Nem a soma de todos os votos de uma seção pode ser atribuída automaticamente a um intervalo posterior ao encerramento regular. Sem fontes suficientes, perguntas sobre votos registrados em janelas temporais específicas deverão permanecer inconclusivas.
+
+### H. Revisões deste adendo
+
+| Versão | Data | Alteração |
+|---|---|---|
+| 0.2 | 28/10/2026 | Formalização dos níveis de cobertura, integridade criptográfica, snapshots, evidências, relatórios e regras de conclusão. |
+<!-- END:ADENDO_METODOLOGICO_ELEICOES_LAB -->

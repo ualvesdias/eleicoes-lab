@@ -205,3 +205,66 @@ Os dados eleitorais permanecem sujeitos aos termos de uso e às condições esta
 Este é um projeto independente de pesquisa e desenvolvimento. Não é uma auditoria oficial do TSE e não representa qualquer órgão da Justiça Eleitoral.
 
 Os resultados das análises deverão ser interpretados segundo os procedimentos, as evidências e as limitações metodológicas documentadas.
+
+<!-- BEGIN:ESTADO_ATUAL_ELEICOES_LAB -->
+## Estado atual do projeto — outubro de 2026
+
+O Eleições Lab mantém uma **camada de dados local** (SQLite e arquivos oficiais preservados) e uma **camada independente de auditoria** (protocolos, execução, evidências e relatórios). A descrição abaixo distingue funcionalidades implementadas de verificações que ainda dependem de execução e validação nos dados reais.
+
+| Componente | Estado e ressalvas |
+|---|---|
+| Descoberta e inventário do catálogo do TSE | Implementado; a completude depende de sincronizações e de conferência com os datasets oficiais. |
+| Download com retomada, SHA-256 local e manifesto | Implementado; o hash local, isoladamente, não autentica o conteúdo perante o TSE. |
+| Importação dos CSVs de boletins presidenciais | Implementada para os formatos já testados; a cobertura de cada seção e a interpretação dos casos excepcionais exigem validação específica. |
+| Cobertura por eleição, turno e UF/exterior | Ferramenta implementada; **cobertura de arquivos** não implica cobertura de seções. |
+| Snapshots SQLite | Implementados via API de backup, com `integrity_check`; podem capturar uma importação ainda incompleta. |
+| Motor de análises | Protocolos YAML, executor, evidências, relatórios e publicação local sob revisão; nenhuma análise eleitoral deve ser descrita como concluída sem execução específica. |
+| Sincronização segura do catálogo | Pacote de atualização disponível; deve ser testado localmente antes de ser considerado operacional no clone. |
+| Comparação com hashes SHA-512 do TSE | Implementação e testes sintéticos disponibilizados; **pendente de instalação e verificação integral dos arquivos reais**. |
+| Logs e formatos binários de urna | Ingestão e reconciliação completas ainda não comprovadas. |
+
+### Comandos operacionais
+
+Executar a partir da **raiz do repositório**, com o ambiente virtual ativado. O projeto utiliza a própria pasta como raiz dos artefatos locais.
+
+```bash
+# Coleta e importação (os argumentos disponíveis dependem da versão instalada)
+python catalogo_tse.py
+python baixar_tse.py --ano 2026 --categoria boletins
+python baixar_tse.py --ano 2026 --categoria boletins --executar
+python importar_boletins.py --ano 2026
+
+# Infraestrutura de auditoria
+python -m eleicoes_lab status
+python -m eleicoes_lab listar
+python -m eleicoes_lab snapshot
+python -m eleicoes_lab cobertura --snapshot "$(ls -t snapshots/*.sqlite | head -1)"
+
+# Após instalar o módulo específico de integridade:
+python verificar_hashes_tse.py --ano 2026 --turno 2 --uf RR
+python verificar_hashes_tse.py --registrar --estrito
+
+# Testes automatizados
+python -m unittest discover -s tests -v
+```
+
+Os comandos de sincronização do catálogo e de verificação SHA-512 devem ser executados somente após a instalação das respectivas atualizações. Não trate saída de teste sintético como verificação dos arquivos eleitorais reais.
+
+### Política de relatórios públicos
+
+- **Versionado no Git:** protocolos, scripts, testes, `METODOLOGIA.md` e relatórios revisados em `relatorios/`, com manifestos de reprodutibilidade.
+- **Não versionado no Git:** arquivos em `raw/`, SQLite principal e snapshots, manifestos operacionais e resultados intermediários em `resultados_analises/`.
+- Toda publicação deve identificar **pergunta, universo analisado, versão do protocolo, commit Git, hash do snapshot, critérios de decisão, resultados, limitações e responsável pela revisão**.
+- A publicação em `relatorios/` é separada da execução. Um relatório provisório não deve ser promovido automaticamente a uma conclusão publicada.
+- A conclusão de cada investigação responde **apenas à pergunta do protocolo**: `sim`, `não` ou `não foi possível concluir`. Resultados de consistência, isoladamente, não demonstram fraude nem sua ausência.
+
+### Marcos ainda necessários para validação científica
+
+1. Completar e confirmar o inventário dos seis turnos e dos recursos oficiais pertinentes.
+2. Validar hashes oficiais, quando disponíveis, distinguindo integridade de autenticação da origem.
+3. Confrontar seções importadas com seções oficialmente esperadas, considerando agregações e substituições de urnas.
+4. Conciliar totalizações e boletins e documentar divergências sem descartar linhas silenciosamente.
+5. Integrar arquivos operacionais e definir a semântica de cada timestamp antes de análises temporais.
+
+Consulte [METODOLOGIA.md](METODOLOGIA.md) para os critérios de decisão, níveis de evidência e limitações.
+<!-- END:ESTADO_ATUAL_ELEICOES_LAB -->

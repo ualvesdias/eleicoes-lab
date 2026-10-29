@@ -63,3 +63,7 @@ env/
 
 # Backup local de atualização
 /.fase22-backup-*/
+
+# Backups locais de atualizações
+/backups/
+/.atualizacao_catalogo/

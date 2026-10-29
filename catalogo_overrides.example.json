@@ -1,0 +1,7 @@
+{
+  "ID-OFICIAL-DO-RECURSO": {
+    "url": "https://cdn.tse.jus.br/caminho/arquivo.zip",
+    "justificativa": "Metadados oficiais apontam para checksum em vez do ZIP; URL ZIP validada com assinatura PK.",
+    "fonte": "Link da página oficial do recurso e data de verificação"
+  }
+}
